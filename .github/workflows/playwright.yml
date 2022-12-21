@@ -19,6 +19,12 @@ jobs:
               node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        echo "$GITHUB_CONTEXT"
+
     - name: Install pakages
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: yarn
