@@ -25,6 +25,9 @@ jobs:
       run: |
         echo "$GITHUB_CONTEXT"
 
+    - name: print url
+      run: echo ${{ github.event.deployment.target_url }}
+
     - name: Install pakages
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: yarn
