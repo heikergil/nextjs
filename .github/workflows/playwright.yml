@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: E2E Tests
 on: deployment_status
 
 jobs:
@@ -19,14 +19,12 @@ jobs:
               node_modules
           key: modules-${{ hashFiles('package-lock.json') }}
 
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: |
-        echo "$GITHUB_CONTEXT"
-
-    - name: print url
-      run: echo ${{ github.event.deployment_status.target_url }}
+    - name: Cache Playwright
+      uses: actions/cache@v3
+      with:
+          path: |
+              ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('yarn.lock') }}
 
     - name: Install pakages
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -39,3 +37,10 @@ jobs:
       env: 
         BASE_URL: ${{ github.event.deployment_status.target_url }}
       run: yarn playwright test
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 10    
+    

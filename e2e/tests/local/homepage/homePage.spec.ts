@@ -17,6 +17,7 @@ test.describe.serial('Home Page tests @homepage @smoke', async () => {
 		const ctaText = page.getByText('Get started by editing pages/index.js')
 		await expect(image).toBeVisible()
 		await expect(ctaText).toBeVisible()
+		await page.pause()
 	  });
 
 
