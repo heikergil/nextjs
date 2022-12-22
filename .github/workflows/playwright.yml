@@ -1,5 +1,5 @@
 name: Playwright Tests
-on: [deployment, workflow_dispatch]
+on: deployment_status
 jobs:
 # test push
    run-e2es:
@@ -26,7 +26,7 @@ jobs:
         echo "$GITHUB_CONTEXT"
 
     - name: print url
-      run: echo ${{ github.event.deployment.target_url }}
+      run: echo ${{ github.event.deployment_status.target_url }}
 
     - name: Install pakages
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
