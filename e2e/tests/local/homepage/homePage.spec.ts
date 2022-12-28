@@ -13,11 +13,7 @@ test.describe.serial('Home Page tests @homepage @smoke', async () => {
 
 
 	test('test', async ({}) => {
-		const image = page.getByRole('img', { name: 'Next.js Logo' })
-		const ctaText = page.getByText('Get started by editing pages/index.js')
-		await expect(image).toBeVisible()
-		await expect(ctaText).toBeVisible()
-		await page.pause()
+		await expect(page.url()).toBe(homepage.localUrl)
 	  });
 
 
