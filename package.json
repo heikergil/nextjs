@@ -6,14 +6,26 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "npx playwright test e2e/tests/local --grep-invert @launch --workers=1",
+    "test:prod": "PROD=true npx playwright test e2e/tests/local --grep-invert @launch --workers=1 --headed"
   },
   "dependencies": {
     "@next/font": "13.0.7",
+    "date-fns": "^2.29.3",
+    "dotenv": "^16.0.3",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.7",
+    "gray-matter": "^4.0.3",
     "next": "13.0.7",
+    "reac": "^0.0.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "^18.2.0",
+    "remark": "^14.0.2",
+    "remark-html": "^15.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.29.0",
+    "playwright": "^1.29.0"
   }
 }
