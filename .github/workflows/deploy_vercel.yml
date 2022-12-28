@@ -1,0 +1,24 @@
+name: Prod Deploy
+on:   
+    release:
+        types: [published]
+    workflow_dispatch:
+      
+jobs:
+    build:
+        timeout-minutes: 30 # nothing good happens after 30 minutes
+        name: Shopify Prod Build
+        runs-on: ubuntu-latest
+        outputs:
+            themeid: ${{ steps.theme_id.outputs.value }}
+        steps:
+
+            - name: Use Node.js 
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
+                  cache: 'yarn'
+
+            - name: Install pakages
+             # if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              run: yarn --prefer-offline
