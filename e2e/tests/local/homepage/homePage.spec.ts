@@ -13,7 +13,7 @@ test.describe.serial('Home Page tests @homepage @smoke', async () => {
 
 
 	test('test', async ({}) => {
-		await expect(page.url()).toBe(homepage.localUrl)
+		await expect(page.url()).toContain(homepage.localUrl)
 	  });
 
 
