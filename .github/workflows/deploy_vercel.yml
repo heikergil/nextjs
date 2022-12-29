@@ -54,6 +54,9 @@ jobs:
               id: deploy-vercel-staging
               run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
+            - name: print url
+              run: echo ${{ steps.deploy-vercel-staging.outputs }}   
+
             - name: Cache Playwright
               uses: actions/cache@v3
               with:
