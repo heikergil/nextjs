@@ -44,13 +44,13 @@ jobs:
             - name: Install Vercel CLI
               run: npm install --global vercel@latest
 
-            - name: Pull Vercel Environment Information
+            - name: Pull Preview Enviroment
               run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
-            - name: Build Project Artifacts 
+            - name: Build Preview
               run: vercel build --token=${{ secrets.VERCEL_TOKEN }}               
 
-            - name: Deploy Project Artifacts to Vercel
+            - name: Deploy Preview
               id: deploy-vercel-staging
               run: echo "preview_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
 
@@ -71,3 +71,11 @@ jobs:
                PROD: true
               run: npx playwright test e2e/tests  --workers=1
 
+            - name: Pull Prod Enviroment
+              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Build Prod
+              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Deploy Prod
+              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}           
