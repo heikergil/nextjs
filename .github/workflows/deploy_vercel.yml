@@ -55,7 +55,7 @@ jobs:
               run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: print url
-              run: echo ${{ steps.deploy-vercel-staging.outputs }}   
+              run: echo ${{ fromJson(steps.deploy-vercel-staging.outputs) }}   
 
             - name: Cache Playwright
               uses: actions/cache@v3
@@ -70,7 +70,7 @@ jobs:
 
             - name: run e2e test
               env:
-               BASE_URL: ${{ fromJson(steps.deploy-vercel-staging.outputs.preview-url) }}
+               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview-url }}
                PROD: true
               run: yarn test
 
