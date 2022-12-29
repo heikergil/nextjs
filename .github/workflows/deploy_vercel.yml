@@ -70,7 +70,7 @@ jobs:
 
             - name: run e2e test
               env:
-               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview-url }}
+               BASE_URL: ${{ fromJson(steps.deploy-vercel-staging.outputs.preview-url) }}
                PROD: true
               run: yarn test
 
