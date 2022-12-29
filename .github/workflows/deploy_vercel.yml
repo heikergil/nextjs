@@ -24,7 +24,7 @@ jobs:
             - name: Get node version
               id: node
               run: |
-               echo "::set-output name=version::$(node -v)"
+               echo "version=$(node -v)" $GITHUB_OUTPUT
 
             - name: Get node_modules cache
               uses: actions/cache@v3.0.2
@@ -52,10 +52,7 @@ jobs:
 
             - name: Deploy Project Artifacts to Vercel
               id: deploy-vercel-staging
-              run: echo "preview_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_ENV
-
-            - name: print url
-              run: echo "${{ env.preview_url }}"
+              run: echo "preview_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
 
             - name: Cache Playwright
               uses: actions/cache@v3
@@ -70,7 +67,7 @@ jobs:
 
             - name: run e2e test
               env:
-               BASE_URL: ${{ env.preview_url }}
+               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
                PROD: true
               run: yarn test
 
