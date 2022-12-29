@@ -33,7 +33,7 @@ const config: PlaywrightTestConfig = {
 		actionTimeout:70000,
 		/* Base URL to use in actions like `await page.goto('/')`. */
 
-		 baseURL: process.env.PROD ? 'https://paireyewear.com/': process.env.BASE_URL,
+		 baseURL: process.env.PROD ? process.env.BASE_URL : 'http://localhost:3000/',
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on',

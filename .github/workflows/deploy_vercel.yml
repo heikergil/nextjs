@@ -29,9 +29,13 @@ jobs:
               with:
                 path: |
                     **/node_modules
-            # Adding node version as cache key
                 key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
 
             - name: Install pakages
-             # if: steps.cache-node-modules.outputs.cache-hit != 'true'
               run: yarn install --frozen-lockfile --prefer-offline
+
+            - name: Build app
+              run: yarn dev  
+
+            - name: Test local
+              run: yarn test    

@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx playwright test e2e/tests/local --grep-invert @launch --workers=1",
-    "test:prod": "PROD=true npx playwright test e2e/tests/local --grep-invert @launch --workers=1 --headed"
+    "test": "npx playwright test e2e/tests  --workers=1 --headed",
+    "test:prod": "PROD=true npx playwright test e2e/tests --workers=1 --headed"
   },
   "dependencies": {
     "@next/font": "13.0.7",
