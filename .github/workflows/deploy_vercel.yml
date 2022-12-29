@@ -12,6 +12,8 @@ jobs:
         timeout-minutes: 30 # nothing good happens after 30 minutes
         name: Vercel Prod Build
         runs-on: ubuntu-latest
+        outputs:
+         preview_url: ${{ steps.deploy-vercel-staging.outputs }}
         steps:
             - uses: actions/checkout@v3
             - name: Use Node.js 
@@ -48,7 +50,11 @@ jobs:
               run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Build Project Artifacts
+              id: hello  
               run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: print url
+              run: echo ${{ toJSON(steps.hello.outputs) }}                 
 
             - name: Deploy Project Artifacts to Vercel
               id: deploy-vercel-staging
