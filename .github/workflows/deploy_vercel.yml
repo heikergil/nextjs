@@ -52,10 +52,10 @@ jobs:
 
             - name: Deploy Project Artifacts to Vercel
               id: deploy-vercel-staging
-              run: echo "::set-output name=preview_url::$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})"
+              run: echo "preview_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_ENV
 
             - name: print url
-              run: echo "${{ toJSON(steps.deploy-vercel-staging.outputs) }}"
+              run: echo "${{ env.preview_url) }}"
 
             - name: Cache Playwright
               uses: actions/cache@v3
@@ -70,7 +70,7 @@ jobs:
 
             - name: run e2e test
               env:
-               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
+               BASE_URL: ${{ env.preview_url }}
                PROD: true
               run: yarn test
 
