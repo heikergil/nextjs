@@ -55,7 +55,7 @@ jobs:
               run: echo "preview_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_ENV
 
             - name: print url
-              run: echo "${{ env.preview_url) }}"
+              run: echo "${{ env.preview_url }}"
 
             - name: Cache Playwright
               uses: actions/cache@v3
