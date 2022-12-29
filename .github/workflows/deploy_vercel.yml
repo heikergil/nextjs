@@ -53,5 +53,9 @@ jobs:
             - name: Deploy Project Artifacts to Vercel
               run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}  
 
-
+            - name: run e2e test
+              env:
+               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview-url }}
+               PROD: true
+              run: yarn test
 
