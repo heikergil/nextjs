@@ -12,8 +12,6 @@ jobs:
         timeout-minutes: 30 # nothing good happens after 30 minutes
         name: Vercel Prod Build
         runs-on: ubuntu-latest
-        outputs:
-         preview_url: ${{ steps.deploy-vercel-staging.outputs }}
         steps:
             - uses: actions/checkout@v3
             - name: Use Node.js 
@@ -54,7 +52,7 @@ jobs:
 
             - name: Deploy Project Artifacts to Vercel
               id: deploy-vercel-staging
-              run: echo "::set-output name=theme_json::$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})"
+              run: echo "::set-output name=preview_url::$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})"
 
             - name: print url
               run: echo "${{ toJSON(steps.deploy-vercel-staging.outputs) }}"
@@ -72,7 +70,7 @@ jobs:
 
             - name: run e2e test
               env:
-               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview-url }}
+               BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
                PROD: true
               run: yarn test
 
