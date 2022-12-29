@@ -7,18 +7,15 @@ on:
 jobs:
     build:
         timeout-minutes: 30 # nothing good happens after 30 minutes
-        name: Shopify Prod Build
+        name: Vercel Prod Build
         runs-on: ubuntu-latest
-        outputs:
-            themeid: ${{ steps.theme_id.outputs.value }}
         steps:
-
+            - uses: actions/checkout@v3
             - name: Use Node.js 
               uses: actions/setup-node@v3
               with:
                   node-version: '18'
                   cache: 'yarn'
-                  cache-dependency-path: './'
 
             - name: Install pakages
              # if: steps.cache-node-modules.outputs.cache-hit != 'true'
