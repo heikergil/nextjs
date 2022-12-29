@@ -69,5 +69,5 @@ jobs:
               env:
                BASE_URL: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
                PROD: true
-              run: yarn test
+              run: npx playwright test e2e/tests  --workers=1
 
