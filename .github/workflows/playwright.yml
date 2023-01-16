@@ -4,6 +4,12 @@ on:
         types: [published]
     workflow_dispatch:
 
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
    E2E-Tests:
     timeout-minutes: 30
@@ -49,14 +55,15 @@ jobs:
         retention-days: 3
 
 
+
     - name: Setup Pages
       uses: actions/configure-pages@v2
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
         # Upload entire repository
-        github_token: ${{ secrets.GITHUB_TOKEN }}
         path: playwright-report/
+        
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v1
