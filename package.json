@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx playwright test e2e/tests  --workers=1",
+    "test": "npx playwright test e2e/tests  --workers=1" ,
     "test:prod": "PROD=true npx playwright test e2e/tests --workers=1"
   },
   "dependencies": {
