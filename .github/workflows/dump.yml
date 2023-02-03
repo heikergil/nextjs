@@ -1,0 +1,15 @@
+name: dump event info
+on: deployment_status
+
+jobs:
+  run:
+    if: github.event.deployment_status.state == 'success' 
+    name: dump GitHub event
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo GITHUB_ACTION: $GITHUB_ACTION
+          echo GITHUB_WORKFLOW: $GITHUB_WORKFLOW
+          echo GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME
+          echo GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH
+          cat $GITHUB_EVENT_PATH
