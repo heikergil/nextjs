@@ -1,5 +1,5 @@
 name: E2E Tests
-on: deployment_status
+on: workflow_dispatch
 
 jobs:
    E2E-Tests:
