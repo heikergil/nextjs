@@ -1,6 +1,6 @@
 on:
   release:
-    type: 'published'
+    types: [published]
     branched: 'release-deployments'
 
 jobs:
