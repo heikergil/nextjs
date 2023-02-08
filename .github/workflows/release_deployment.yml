@@ -9,19 +9,13 @@ on:
 
 jobs:
     build:
-        if: ${ github.event.release.target_commitish } === 'release-deployments'
+        if: ${{ github.event.release.target_commitish }} === 'release-deployments'
         timeout-minutes: 30 # nothing good happens after 30 minutes
         name: Vercel Prod Build
         runs-on: ubuntu-latest
         outputs:
           preview_url: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
         steps:
-
-
-            - name: Dump GitHub context
-              run: |
-                echo ${ github.event.release.target_commitish }
-
             - name: Dump GitHub context2
               run: |
                 echo ${{ github.event.release.target_commitish }}            
