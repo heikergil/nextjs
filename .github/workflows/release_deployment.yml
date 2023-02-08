@@ -1,10 +1,157 @@
 on:
   release:
     types: [published]
-    branched: 'release-deployments'
-### hello
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - run: curl -X POST -d {} https://api.vercel.com/v1/integrations/deploy/prj_kxsc3DGbUTuntoxpgxwmQh90Re2P/LGlvI9oSCE
+    build:
+        timeout-minutes: 30 # nothing good happens after 30 minutes
+        name: Vercel Prod Build
+        runs-on: ubuntu-latest
+        outputs:
+          preview_url: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js 
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
+                  cache: 'yarn'
+                  cache-dependency-path: yarn.lock
+
+            - name: Get node version
+              id: node
+              run: |
+               echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
+            - name: Get node_modules cache
+              uses: actions/cache@v3
+              id: node_modules
+              with:
+                path: |
+                    **/node_modules
+                key: node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
+
+            - name: Install pakages
+              run: yarn install --frozen-lockfile --prefer-offline
+
+            - name: Install Vercel CLI
+              run: npm install --global vercel@latest           
+
+            - name: Deploy Preview
+              id: deploy-vercel-staging
+              run: echo "preview_url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
+
+
+    test:
+        name: E2E tests
+        needs: build
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+
+            - name: Get node_modules cache
+              uses: actions/cache@v3
+              id: node_modules
+              with:
+                path: |
+                    **/node_modules
+                key: node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
+
+            - name: Cache Playwright
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.cache/ms-playwright
+                  key: playwright-${{ hashFiles('yarn.lock') }}
+
+            - name: Install Playwright Browsers
+              if: steps.cache-playwright.outputs.cache-hit != 'true'
+              run: npx playwright install --with-deps chromium webkit  
+                              
+            - name: Run Playwright tests
+              id: e2e_tests
+              env:
+                CI: true
+                TEST_ACCOUNT_EMAIL: ${{ secrets.TEST_ACCOUNT_EMAIL }}
+                TEST_ACCOUNT_PASS: ${{ secrets.TEST_ACCOUNT_PASS }}
+                EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
+                EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
+                BASE_URL: ${{ needs.build.outputs.preview_url }}
+              run: yarn playwright test
+            - uses: actions/upload-artifact@v2
+              if: always()
+              with:
+                name: playwright-report
+                path: playwright-report/
+                retention-days: 3
+
+            - name: E2E tests slack notification
+              if: always()
+              uses: slackapi/slack-github-action@v1.22.0
+              with:
+                  channel-id: 'headless-ci-notifications'
+                  payload: |
+                      {
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> ${{ steps.e2e_tests.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.e2e_tests.outcome ] }}"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+
+    deploy:
+        name: publish shopify theme
+        needs: [build, test]
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: ruby/setup-ruby@v1
+
+            - name: Cache node_modules
+              uses: actions/cache@v3
+              id: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                  key: modules-${{ hashFiles('package-lock.json') }}
+
+
+            # - name: Pull Prod Enviroment
+            #   run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+            # - name: Build Prod
+            #   run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+            # - name: Deploy Prod
+            #   run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}                     
+
+
+            - name: Theme publish slack notification
+              id: slack
+              uses: slackapi/slack-github-action@v1.22.0
+              with:
+                  channel-id: 'headless-ci-notifications'
+                  payload: |
+                      {
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> Theme is Live  :ship::white_check_mark:"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}  
