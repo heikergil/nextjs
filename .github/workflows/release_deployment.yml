@@ -1,3 +1,8 @@
+name: Prod Deploy
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  
 on:
   release:
     types: [published]
@@ -87,26 +92,6 @@ jobs:
                 path: playwright-report/
                 retention-days: 3
 
-            - name: E2E tests slack notification
-              if: always()
-              uses: slackapi/slack-github-action@v1.22.0
-              with:
-                  channel-id: 'headless-ci-notifications'
-                  payload: |
-                      {
-                        "blocks": [
-                          {
-                            "type": "section",
-                            "text": {
-                              "type": "mrkdwn",
-                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> ${{ steps.e2e_tests.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.e2e_tests.outcome ] }}"
-                            }
-                          }
-                        ]
-                      }
-              env:
-                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
 
     deploy:
         name: publish shopify theme
@@ -114,8 +99,8 @@ jobs:
         timeout-minutes: 30
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - uses: ruby/setup-ruby@v1
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
 
             - name: Cache node_modules
               uses: actions/cache@v3
@@ -125,33 +110,12 @@ jobs:
                       node_modules
                   key: modules-${{ hashFiles('package-lock.json') }}
 
+            - name: Pull Prod Enviroment
+              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-            # - name: Pull Prod Enviroment
-            #   run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+            - name: Build Prod
+              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-            # - name: Build Prod
-            #   run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
-            # - name: Deploy Prod
-            #   run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}                     
-
-
-            - name: Theme publish slack notification
-              id: slack
-              uses: slackapi/slack-github-action@v1.22.0
-              with:
-                  channel-id: 'headless-ci-notifications'
-                  payload: |
-                      {
-                        "blocks": [
-                          {
-                            "type": "section",
-                            "text": {
-                              "type": "mrkdwn",
-                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> Theme is Live  :ship::white_check_mark:"
-                            }
-                          }
-                        ]
-                      }
-              env:
-                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}  
+            - name: Deploy Prod
+              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}                     
+ 
