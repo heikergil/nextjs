@@ -9,8 +9,8 @@ on:
 
 jobs:
     build:
-        if: github.event.release.target_commitish == 'release-deployments'
         timeout-minutes: 30 # nothing good happens after 30 minutes
+        if: github.event.release.target_commitish == 'release-deployments'
         name: Vercel Prod Build
         runs-on: ubuntu-latest
         outputs:
