@@ -19,7 +19,7 @@ jobs:
 
             - name: Extract branch name
               shell: bash
-              run: echo ${GITHUB_REF}
+              run: echo ${github}
 
             - uses: actions/checkout@v3
             - name: Use Node.js 
