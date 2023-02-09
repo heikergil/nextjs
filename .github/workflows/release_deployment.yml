@@ -121,9 +121,6 @@ jobs:
             - name: Pull Prod Enviroment
               run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-            - name: Build Prod
-              run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-
             - name: Deploy Prod
-              run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}                     
+              run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}                     
  
