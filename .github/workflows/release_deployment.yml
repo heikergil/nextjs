@@ -28,22 +28,6 @@ jobs:
                   cache: 'yarn'
                   cache-dependency-path: yarn.lock
 
-            # - name: Get node version
-            #   id: node
-            #   run: |
-            #    echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-            # - name: Get node_modules cache
-            #   uses: actions/cache@v3
-            #   id: node_modules
-            #   with:
-            #     path: |
-            #         **/node_modules
-            #     key: node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
-
-            # - name: Install pakages
-            #   run: yarn install --frozen-lockfile --prefer-offline
-
             - name: Install Vercel CLI
               run: npm install --global vercel@latest           
 
@@ -61,23 +45,8 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
 
-            # - name: Get node_modules cache
-            #   uses: actions/cache@v3
-            #   id: node_modules
-            #   with:
-            #     path: |
-            #         **/node_modules
-            #     key: node_modules-${{ hashFiles('**/yarn.lock') }}-${{ steps.node.outputs.version }}
-
-            - name: Cache Playwright
-              uses: actions/cache@v3
-              with:
-                  path: |
-                      ~/.cache/ms-playwright
-                  key: playwright-${{ hashFiles('yarn.lock') }}
-
             - name: Install playwright
-              run: yarn add playwright@1.29.0                  
+              run: yarn add playwright@1.29.1                  
 
             - name: Install Playwright Browsers
               if: steps.cache-playwright.outputs.cache-hit != 'true'
@@ -93,7 +62,7 @@ jobs:
                 EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
                 BASE_URL: ${{ needs.build.outputs.preview_url }}
               run: yarn playwright test
-            - uses: actions/upload-artifact@v2
+            - uses: actions/upload-artifact@v3
               if: always()
               with:
                 name: playwright-report
