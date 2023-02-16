@@ -13,8 +13,6 @@ jobs:
         if: github.event.release.target_commitish == 'dev'
         name: Test dev
         runs-on: ubuntu-latest
-        outputs:
-          preview_url: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
         steps:
             - uses: actions/checkout@v3
             - name: Use Node.js 
@@ -39,7 +37,7 @@ jobs:
                 TEST_ACCOUNT_PASS: ${{ secrets.TEST_ACCOUNT_PASS }}
                 EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
                 EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
-                BASE_URL: ${{ needs.build.outputs.preview_url }}
+                BASE_URL: 'https://nextjs-git-dev-gilheyker.vercel.app'
               run: yarn playwright test
             - uses: actions/upload-artifact@v2
               if: always()
@@ -70,7 +68,7 @@ jobs:
 
     deploy:
         name: deploy to prod
-        needs: [build]
+        needs: [test]
         timeout-minutes: 15
         runs-on: ubuntu-latest
         steps:
