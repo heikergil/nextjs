@@ -8,18 +8,14 @@ on:
     types: [published]
 
 jobs:
-    build:
-        timeout-minutes: 30 # nothing good happens after 30 minutes
-        if: github.event.release.target_commitish == 'release-deployments'
-        name: Vercel Prod Build
+    test:
+        timeout-minutes: 15
+        if: github.event.release.target_commitish == 'dev'
+        name: Test dev
         runs-on: ubuntu-latest
         outputs:
           preview_url: ${{ steps.deploy-vercel-staging.outputs.preview_url }}
         steps:
-            - name: Dump GitHub context2
-              run: |
-                echo ${{ github.event.release.target_commitish }}            
-
             - uses: actions/checkout@v3
             - name: Use Node.js 
               uses: actions/setup-node@v3
@@ -28,30 +24,13 @@ jobs:
                   cache: 'yarn'
                   cache-dependency-path: yarn.lock
 
-            - name: Install Vercel CLI
-              run: npm install --global vercel@latest           
-
-            - name: Deploy Preview
-              id: deploy-vercel-staging
-              run: echo "preview_url=$(vercel deploy --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
-
-
-    test:
-        name: E2E tests
-        needs: build
-        timeout-minutes: 30
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-
             - name: Install playwright
               run: yarn add playwright@1.29.1                  
 
             - name: Install Playwright Browsers
               if: steps.cache-playwright.outputs.cache-hit != 'true'
               run: npx playwright install --with-deps chromium webkit  
-                              
+
             - name: Run Playwright tests
               id: e2e_tests
               env:
@@ -62,18 +41,37 @@ jobs:
                 EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
                 BASE_URL: ${{ needs.build.outputs.preview_url }}
               run: yarn playwright test
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v2
               if: always()
               with:
                 name: playwright-report
                 path: playwright-report/
                 retention-days: 3
 
+            - name: E2E tests slack notification
+              if: always()
+              uses: slackapi/slack-github-action@v1.22.0
+              with:
+                  channel-id: 'headless-ci-notifications'
+                  payload: |
+                      {
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> ${{ steps.e2e_tests.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.e2e_tests.outcome ] }}"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
     deploy:
-        name: publish shopify theme
-        needs: [build, test]
-        timeout-minutes: 30
+        name: deploy to prod
+        needs: [build]
+        timeout-minutes: 15
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -87,9 +85,32 @@ jobs:
                       node_modules
                   key: modules-${{ hashFiles('package-lock.json') }}
 
+            - name: Install Vercel CLI
+              run: npm install --global vercel@latest              
+
             - name: Pull Prod Enviroment
               run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Deploy Prod
               run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}                     
+
+            - name: Theme publish slack notification
+              id: slack
+              uses: slackapi/slack-github-action@v1.22.0
+              with:
+                  channel-id: 'headless-ci-notifications'
+                  payload: |
+                      {
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> is Live  :ship::white_check_mark:"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}                      
  
