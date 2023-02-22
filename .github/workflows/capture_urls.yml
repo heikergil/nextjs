@@ -1,4 +1,4 @@
-name: E2E Tests
+name: capture-url
 on: deployment_status
 
 jobs:

@@ -32,6 +32,7 @@ jobs:
     - name: Download workflow artifact
       uses: dawidd6/action-download-artifact@v2.26.0
       with:
+        workflow: capture_urls.yml
         name: capture_url
         path: preview_url.txt
     - name: Print the final result
