@@ -34,7 +34,6 @@ jobs:
       with:
         workflow: capture_urls.yml
         name: capture_url
-        path: preview_url
     - name: Print the final result
       id: capture-url
       shell: bash
