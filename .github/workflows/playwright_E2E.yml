@@ -18,7 +18,7 @@ jobs:
     - name: get branch
       id: get_branch
       run: |
-        branch=$(git name-rev --name-only $GITHUB_SHA) 
+        branch=${GITHUB_REF#refs/heads/} 
         echo "preview_branch=$branch" >> $GITHUB_OUTPUT 
 
     - name: replace
