@@ -1,5 +1,5 @@
 name: E2E Tests
-on: workflow_dispatch
+on: deployment_status
 
 jobs:
    E2E-Tests:
@@ -12,38 +12,64 @@ jobs:
       with:
         node-version: '18.x'
 
-
-    - name: Cache node_modules
-      uses: actions/cache@v3
-      id: cache-node-modules
+    - shell: bash
+      run: |
+        ${{ github.event.deployment_status.target_url }} > preview_url.txt
+    - name: Upload url
+      uses: actions/upload-artifact@v3
       with:
-        path: '**/node_modules'
-        key: ${{ hashFiles('**/yarn.lock') }}
+        name: capture_url
+        path: preview_url.txt
 
-    - name: Cache Playwright
-      uses: actions/cache@v3
+    - name: Upload math result for job 2
+      uses: actions/upload-artifact@v3
       with:
-          path: |
-              ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('yarn.lock') }}
+        name: capture_url
+        path: preview_url.txt
 
-    - name: Install pakages
-      if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      run: yarn
-
-    - name: Install Playwright 
-      run: npx playwright install --with-deps chromium
-
-    - name: Run Playwright tests
-      env: 
-        BASE_URL: ${{ github.event.deployment_status.target_url }}
-      run: yarn playwright test
-    - uses: actions/upload-artifact@v2
-      if: always()
+    - name: Download math result for job 2
+      uses: actions/download-artifact@v3
       with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 3    
+        name: capture_url
+    - name: Print the final result
+      shell: bash
+      run: |
+        value=`cat preview_url.txt`
+        echo The result is $value   
+    
+
+
+    # - name: Cache node_modules
+    #   uses: actions/cache@v3
+    #   id: cache-node-modules
+    #   with:
+    #     path: '**/node_modules'
+    #     key: ${{ hashFiles('**/yarn.lock') }}
+
+    # - name: Cache Playwright
+    #   uses: actions/cache@v3
+    #   with:
+    #       path: |
+    #           ~/.cache/ms-playwright
+    #       key: playwright-${{ hashFiles('yarn.lock') }}
+
+    # - name: Install pakages
+    #   if: steps.cache-node-modules.outputs.cache-hit != 'true'
+    #   run: yarn
+
+    # - name: Install Playwright 
+    #   run: npx playwright install --with-deps chromium
+
+    # - name: Run Playwright tests
+    #   env: 
+    #     BASE_URL: ${{ github.event.deployment_status.target_url }}
+    #   run: yarn playwright test
+    # - uses: actions/upload-artifact@v2
+    #   if: always()
+    #   with:
+    #     name: playwright-report
+    #     path: playwright-report/
+    #     retention-days: 3    
  
  
     
