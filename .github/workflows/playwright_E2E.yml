@@ -18,7 +18,8 @@ jobs:
     - name: get branch
       id: get_branch
       run: |
-        branch=${GITHUB_REF#refs/heads/} 
+        echo=${{ github.ref_name }}
+        branch=${{ github.ref_name }}
         echo "preview_branch=$branch" >> $GITHUB_OUTPUT 
 
     - name: replace
