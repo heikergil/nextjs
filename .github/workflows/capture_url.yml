@@ -10,21 +10,21 @@ jobs:
     - name: Checkout 🛎
       uses: actions/checkout@v2
       with:
-        # fetch all commits so we can find the branch
         fetch-depth: 0
-    - name: Print branch 🌳
-      run: git name-rev --name-only $GITHUB_SHA
-
+    - name: get branch
+      id: get_branch
+      run: |
+        echo "preview_branch=$(git name-rev --name-only $GITHUB_SHA)" >> $GITHUB_OUTPUTS
 
     - shell: bash
       run: |
-       echo ${{ github.event.deployment_status.target_url }} > preview_url.txt
+       echo ${{ github.event.deployment_status.target_url }} > preview_`${{ steps.get_branch.outputs.preview_branch }}`.txt
 
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
         name: capture_url
-        path: preview_url.txt
+        path: preview_`${{ steps.get_branch.outputs.preview_branch }}`.txt
 
     - name: Dump GitHub context
       env:
