@@ -40,7 +40,7 @@ jobs:
       run: yarn add playwright -D -W
 
     - name: Install playwright dedps
-      run: yarn playwright install-deps chromium
+      run: npx playwright install-deps chromium
 
     - name: Run Playwright tests
       env: 
