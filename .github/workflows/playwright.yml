@@ -14,7 +14,7 @@ jobs:
 
     - shell: bash
       run: |
-        ${{ github.event.deployment_status.target_url }} > preview_url.txt
+       echo ${{ github.event.deployment_status.target_url }} > preview_url.txt
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
