@@ -12,7 +12,7 @@ test.describe.serial('Home Page tests @homepage @smoke', async () => {
 
 
 	test('test', async ({}) => {
-	expect(page.url()).toBe('https://nextjs-git-dev-gilheyker.vercel.app/')
+	expect(page.url()).toBe('https://nextjs-9gbuc970t-gilheyker.vercel.app/')
 	  });
 
 
