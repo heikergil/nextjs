@@ -20,6 +20,11 @@ jobs:
         workflow: capture_urls.yml
         name: capture_url
 
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
     - name: Store preview URL
       id: capture-url
       shell: bash
