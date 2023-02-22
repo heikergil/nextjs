@@ -39,8 +39,7 @@ jobs:
       shell: bash
       run: |
         previewURL=`cat preview_url.txt`
-        echo "$previewURL" >> $GITHUB_OUTPUT 
-        
+        echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
     
     - name: Install pakages
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
