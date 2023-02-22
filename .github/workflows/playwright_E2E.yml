@@ -14,31 +14,22 @@ jobs:
       with:
         node-version: '18.x'
 
-    # - name: get branch
-    #   id: get_branch
-    #   run: |
-    #     echo=${{ github.ref_name }}
-    #     branch=${{ github.ref_name }}
-    #     echo "preview_branch=$branch" >> $GITHUB_OUTPUT 
+    - name: get branch
+      id: get_branch
+      run: |
+        branch=${{ github.head_ref }}
+        echo "preview_branch=$branch" >> $GITHUB_OUTPUT 
 
-    # - name: replace
-    #   uses: mad9000/actions-find-and-replace-string@1
-    #   id: findandreplace
-    #   with:
-    #     source: ${{ steps.get_branch.outputs.preview_branch }}
-    #     find: 'remotes/origin/'
-    #     replace: '' 
+    - name: Download URL file
+      uses: dawidd6/action-download-artifact@v2.26.0
+      with:
+        workflow: capture_urls.yml
+        name: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
 
-    # - name: Download URL file
-    #   uses: dawidd6/action-download-artifact@v2.26.0
-    #   with:
-    #     workflow: capture_urls.yml
-    #     name: preview-${{ steps.findandreplace.outputs.value }}.txt
-
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
+    # - name: Dump GitHub context
+    #   env:
+    #     GITHUB_CONTEXT: ${{ toJson(github) }}
+    #   run: echo "$GITHUB_CONTEXT"
 
     - name: Store preview URL
       id: capture-url
