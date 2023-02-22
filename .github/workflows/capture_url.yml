@@ -7,17 +7,38 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout 🛎
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: get branch
+      id: get_branch
+      run: |
+        branch=$(git name-rev --name-only $GITHUB_SHA) 
+        echo "preview_branch=$branch" >> $GITHUB_OUTPUT
+
+    - name: replace
+      uses: mad9000/actions-find-and-replace-string@1
+      id: findandreplace
+      with:
+        source: ${{ steps.get_branch.outputs.preview_branch }}
+        find: 'remotes/origin/'
+        replace: '' 
+
     - shell: bash
       run: |
-       echo ${{ github.event.deployment_status.target_url }} > preview_url.txt
+       echo ${{ github.event.deployment_status.target_url }} >> preview-${{ steps.findandreplace.outputs.value }}.txt
 
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
-        name: capture_url
-        path: preview_url.txt
+        name: preview-${{ steps.findandreplace.outputs.value }}.txt
+        path: preview-${{ steps.findandreplace.outputs.value }}.txt
 
-    
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
  
  
     

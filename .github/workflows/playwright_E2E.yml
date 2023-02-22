@@ -14,17 +14,33 @@ jobs:
       with:
         node-version: '18.x'
 
+    - name: get branch
+      id: get_branch
+      run: |
+        branch=${{ github.head_ref }}
+        echo "preview_branch=$branch" >> $GITHUB_OUTPUT
+
     - name: Download URL file
       uses: dawidd6/action-download-artifact@v2.26.0
       with:
-        workflow: capture_urls.yml
-        name: capture_url
+        workflow: capture_url.yml
+        # commit: ${{github.event.pull_request.head.sha}}
+        # branch: ${{ steps.get_branch.outputs.preview_branch }}
+        # check_artifacts: true
+        # search_artifacts: true
+        name: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
+        #path: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
+
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
 
     - name: Store preview URL
       id: capture-url
       shell: bash
       run: |
-        previewURL=`cat preview_url.txt`
+        previewURL=`cat preview-${{ steps.get_branch.outputs.preview_branch }}.txt`
         echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
     
     - name: Install playwright
