@@ -38,7 +38,8 @@ jobs:
       id: capture-url
       shell: bash
       run: |
-        echo ${{cat preview_url.txt}} >> $GITHUB_OUTPUT 
+        previewURL=`cat preview_url.txt`
+        echo "$previewURL" >> $GITHUB_OUTPUT 
         
     
     - name: Install pakages
