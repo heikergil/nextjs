@@ -14,39 +14,29 @@ jobs:
       with:
         node-version: '18.x'
 
-    # - shell: bash
-    #   run: |
-    #    echo ${{ github.event.deployment_status.target_url }} > preview_url.txt
-    # - name: Upload url
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: capture_url
-    #     path: preview_url.txt
-
-    # - name: Upload math result for job 2
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: capture_url
-    #     path: preview_url.txt
-
-    - name: Download workflow artifact
+    - name: Download URL file
       uses: dawidd6/action-download-artifact@v2.26.0
       with:
         workflow: capture_urls.yml
         name: capture_url
-    - name: Print the final result
+
+    - name: Store preview URL
       id: capture-url
       shell: bash
       run: |
         previewURL=`cat preview_url.txt`
         echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
     
-    - name: Install pakages
-      if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      run: yarn
+    - name: Cache Playwright
+      uses: actions/cache@v3
+      with:
+          path: |
+              ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('yarn.lock') }}
 
-    - name: Install Playwright 
-      run: npx playwright install --with-deps chromium
+    - name: Install Playwright Browsers
+      if: steps.cache-playwright.outputs.cache-hit != 'true'
+      run: npx playwright install --with-deps chromium  
 
     - name: Run Playwright tests
       env: 
