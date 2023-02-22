@@ -21,11 +21,19 @@ jobs:
         branch=$(git name-rev --name-only $GITHUB_SHA) 
         echo "preview_branch=$branch" >> $GITHUB_OUTPUT 
 
+    - name: replace
+      uses: mad9000/actions-find-and-replace-string@1
+      id: findandreplace
+      with:
+        source: ${{ steps.get_branch.outputs.preview_branch }}
+        find: 'remotes/origin/'
+        replace: '' 
+
     - name: Download URL file
       uses: dawidd6/action-download-artifact@v2.26.0
       with:
         workflow: capture_urls.yml
-        name: preview_${{ steps.get_branch.outputs.preview_branch##*/ }}.txt
+        name: preview_preview_${{ steps.findandreplace.outputs.value }}.txt
 
     - name: Dump GitHub context
       env:
