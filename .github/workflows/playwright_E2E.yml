@@ -24,11 +24,11 @@ jobs:
       uses: dawidd6/action-download-artifact@v2.26.0
       with:
         workflow: capture_urls.yml
-        branch: ${{ steps.get_branch.outputs.preview_branch }}
+        #branch: ${{ steps.get_branch.outputs.preview_branch }}
         #check_artifacts: true
         search_artifacts: true
         name: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
-        path: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
+        #path: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
 
     - name: Dump GitHub context
       env:
