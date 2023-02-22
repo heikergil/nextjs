@@ -47,45 +47,4 @@ export default class Homepage {
 		this.sunglassesCTAText = page.locator("//section[@class='index-landing-cta']//*[normalize-space()='Sunglasses']");
 	}
 
-	private async navigateTo(locator: Locator) {
-		await locator.scrollIntoViewIfNeeded();
-		await Promise.all([this.page.waitForNavigation(), locator.click()]);
-	}
-
-	async handlePopUp() {
-		// await this.popUpCloseBtn.scrollIntoViewIfNeeded()
-		// await this.popUpCloseBtn.click();
-	}
-
-	async navigateToShopWomen() {
-		await this.navigateTo(this.shopWomenBtn);
-	}
-
-	async clickMyCartIcon() {
-		await this.myCartIcon.click();
-	}
-
-	async returnCartPaymenstValue(): Promise<number> {
-		const cartPaymentsText = await this.myCartPayments.textContent();
-		return parseFloat(cartPaymentsText.split(' ')[4].replace('$', ''));
-	}
-
-	async returnMyCartValue(): Promise<number> {
-		const value = await this.myCartValue.textContent();
-		return parseFloat(value.replace('$', ''));
-	}
-
-	async returnMyCartSubtotal(): Promise<number> {
-		const value = await this.myCartSubtotal.textContent();
-		return parseFloat(value.replace('$', ''));
-	}
-
-	async returnMyCartItemCount(): Promise<number> {
-		const value = await this.myCartItemCount.textContent();
-		return parseFloat(value.match(/\d+/)[0]);
-	}
-
-	async handlePreviewBar() {
-        await handlePreviewBar_util(this.page,this.localUrl)
-    }
 }

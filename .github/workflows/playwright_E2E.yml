@@ -27,19 +27,9 @@ jobs:
         previewURL=`cat preview_url.txt`
         echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
     
-    - name: Cache Playwright
-      uses: actions/cache@v3
-      id: playwright-cache
-      with:
-          path: |
-              ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('yarn.lock') }}
-
     - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: yarn add playwright@ -D -W
-
-      
+      run: yarn add playwright@
 
     - name: Install playwright deps
       run: npx playwright install --with-deps chromium
