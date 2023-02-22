@@ -32,7 +32,7 @@ jobs:
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
-        name: capture_url
+        name: preview-${{ steps.findandreplace.outputs.value }}.txt
         path: preview-${{ steps.findandreplace.outputs.value }}.txt
 
     - name: Dump GitHub context
