@@ -27,13 +27,13 @@ jobs:
 
     - shell: bash
       run: |
-       echo ${{ github.event.deployment_status.target_url }} >> preview_${{ steps.findandreplace.outputs.value }}.txt
+       echo ${{ github.event.deployment_status.target_url }} >> preview-${{ steps.findandreplace.outputs.value }}.txt
 
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
         name: capture_url
-        path: preview_${{ steps.get_branch.outputs.preview_branch }}.txt
+        path: preview-${{ steps.findandreplace.outputs.value }}.txt
 
     - name: Dump GitHub context
       env:
