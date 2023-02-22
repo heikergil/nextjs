@@ -37,10 +37,10 @@ jobs:
 
     - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: yarn add playwright -D -W
+      run: yarn add playwright@
 
-    - name: Install playwright dedps
-      run: npx playwright install-deps chromium
+    - name: Install playwright deps
+      run: npx playwright install --with-deps chromium
 
     - name: Run Playwright tests
       env: 
