@@ -61,9 +61,9 @@ jobs:
                       ~/.cache/ms-playwright
                   key: playwright-${{ hashFiles('yarn.lock') }}
 
-            - name: Install Playwright Browsers
-              if: steps.cache-playwright.outputs.cache-hit != 'true'
-              run: npx playwright install --with-deps chromium webkit      
+            - name: Install playwright deps
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
+              run: yarn add playwright -D -W && yarn playwright install-deps    
 
             - name: run e2e test
               env:

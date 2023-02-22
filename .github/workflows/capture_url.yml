@@ -1,0 +1,23 @@
+name: capture-url
+on: deployment_status
+
+jobs:
+   E2E-Tests:
+    if: github.event.deployment_status.state == 'success' 
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+    - shell: bash
+      run: |
+       echo ${{ github.event.deployment_status.target_url }} > preview_url.txt
+
+    - name: Upload url
+      uses: actions/upload-artifact@v3
+      with:
+        name: capture_url
+        path: preview_url.txt
+
+    
+ 
+ 
+    
