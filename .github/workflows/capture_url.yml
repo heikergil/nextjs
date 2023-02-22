@@ -14,7 +14,8 @@ jobs:
     - name: get branch
       id: get_branch
       run: |
-        echo "preview_branch=$(git name-rev --name-only $GITHUB_SHA)" >> $GITHUB_OUTPUTS
+        branch=$(git name-rev --name-only $GITHUB_SHA) 
+        echo "preview_branch=$branch" >> $GITHUB_OUTPUTS
 
     - shell: bash
       run: |
