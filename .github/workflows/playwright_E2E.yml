@@ -40,7 +40,7 @@ jobs:
       id: capture-url
       shell: bash
       run: |
-        previewURL=`cat preview_url.txt`
+        previewURL=`cat preview-${{ steps.get_branch.outputs.preview_branch }}.txt`
         echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
     
     - name: Install playwright
