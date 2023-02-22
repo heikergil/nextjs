@@ -20,25 +20,18 @@ jobs:
         branch=${{ github.head_ref }}
         echo "preview_branch=$branch" >> $GITHUB_OUTPUT
 
-
-    - uses: actions/download-artifact@v3
+    - name: Download URL file
+      uses: dawidd6/action-download-artifact@v2.26.0
       with:
+        workflow: capture_urls.yml
+        check_artifacts: true
         name: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
-      
-    - name: Display structure of downloaded files
-      run: ls -R 
+        path: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
 
-    # - name: Download URL file
-    #   uses: dawidd6/action-download-artifact@v2.26.0
-    #   with:
-    #     workflow: capture_urls.yml
-    #     name: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
-    #     path: preview-${{ steps.get_branch.outputs.preview_branch }}.txt
-
-    # - name: Dump GitHub context
-    #   env:
-    #     GITHUB_CONTEXT: ${{ toJson(github) }}
-    #   run: echo "$GITHUB_CONTEXT"
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
 
     - name: Store preview URL
       id: capture-url
