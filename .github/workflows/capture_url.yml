@@ -33,6 +33,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: preview-${{ steps.findandreplace.outputs.value }}.txt
+        path: preview-${{ steps.findandreplace.outputs.value }}
 
     - name: Dump GitHub context
       env:
