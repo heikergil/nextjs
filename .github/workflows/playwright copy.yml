@@ -39,8 +39,8 @@ jobs:
       shell: bash
       run: |
         value=`cat preview_url.txt`
-        echo The result is $value
-        $value >> $GITHUB_OUTPUT 
+        echo $value >> $GITHUB_OUTPUT 
+        
     
     - name: Install pakages
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
