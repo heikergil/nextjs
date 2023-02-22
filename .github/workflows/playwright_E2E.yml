@@ -39,6 +39,8 @@ jobs:
       if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: yarn add playwright@ -D -W
 
+      
+
     - name: Install playwright deps
       run: npx playwright install --with-deps chromium
 
