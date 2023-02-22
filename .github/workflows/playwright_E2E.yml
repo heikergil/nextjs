@@ -29,14 +29,18 @@ jobs:
     
     - name: Cache Playwright
       uses: actions/cache@v3
+      id: playwright-cache
       with:
           path: |
               ~/.cache/ms-playwright
           key: playwright-${{ hashFiles('yarn.lock') }}
 
-    - name: Install playwright deps
+    - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: yarn add playwright -D -W && yarn playwright install-deps   
+      run: yarn add playwright -D -W
+
+    - name: Install playwright dedps
+      run: yarn playwright install-deps chromium
 
     - name: Run Playwright tests
       env: 
