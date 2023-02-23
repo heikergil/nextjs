@@ -2,7 +2,7 @@ name: capture-url
 on: deployment_status
 
 jobs:
-   E2E-Tests:
+   capture-url:
     if: github.event.deployment_status.state == 'success' 
     timeout-minutes: 5
     runs-on: ubuntu-latest
@@ -16,6 +16,13 @@ jobs:
       run: |
         branch=$(git name-rev --name-only $GITHUB_SHA) 
         echo "preview_branch=$branch" >> $GITHUB_OUTPUT
+
+
+    - name: get branch test
+      id: get_branch_test
+      run: |
+        branch=${{ github.head_ref }}
+        echo $branch
 
     - name: replace
       uses: mad9000/actions-find-and-replace-string@1
