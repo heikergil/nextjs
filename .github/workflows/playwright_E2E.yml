@@ -4,7 +4,7 @@ on:
     types: [labeled]
 
 jobs:
-   E2E-Tests:
+   E2E-Tests-checks:
     timeout-minutes: 30
     if: ${{ github.event.label.name == 'ready' }}
     runs-on: ubuntu-latest
