@@ -2,7 +2,7 @@ name: capture-url
 on: deployment_status
 
 jobs:
-   E2E-Tests:
+   capture-url:
     if: github.event.deployment_status.state == 'success' 
     timeout-minutes: 5
     runs-on: ubuntu-latest
