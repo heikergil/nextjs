@@ -93,9 +93,9 @@ jobs:
               id: deploy_prod
               run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}                     
 
-            - name: Theme publish slack notification
+            - name: Release slack notification
               id: slack
-              uses: slackapi/slack-github-action@v1.22.0
+              uses: slackapi/slack-github-action@v1.23.0
               with:
                   channel-id: 'test-notifications'
                   payload: |
