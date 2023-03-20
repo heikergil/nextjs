@@ -10,7 +10,7 @@ on:
 jobs:
     test:
         timeout-minutes: 15
-        if: github.event.release.target_commitish == 'dev'
+        if: github.event.release.target_commitish == 'main'
         name: Test dev
         runs-on: ubuntu-latest
         steps:
