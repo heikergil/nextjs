@@ -90,6 +90,7 @@ jobs:
               run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Deploy Prod
+              continue-on-error: true
               id: deploy_prod
               run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}                     
 
