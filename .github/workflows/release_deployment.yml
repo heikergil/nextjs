@@ -48,9 +48,9 @@ jobs:
 
             - name: E2E tests slack notification
               if: always()
-              uses: slackapi/slack-github-action@v1.22.0
+              uses: slackapi/slack-github-action@v1.23.0
               with:
-                  channel-id: 'headless-ci-notifications'
+                  channel-id: 'test-notifications'
                   payload: |
                       {
                         "blocks": [
