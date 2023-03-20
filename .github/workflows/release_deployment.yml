@@ -58,7 +58,7 @@ jobs:
                             "type": "section",
                             "text": {
                               "type": "mrkdwn",
-                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> ${{ steps.e2e_tests.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.e2e_tests.outcome ] }}"
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> E2E tests ${{ steps.e2e_tests.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.e2e_tests.outcome ] }}"
                             }
                           }
                         ]
@@ -105,7 +105,7 @@ jobs:
                             "type": "section",
                             "text": {
                               "type": "mrkdwn",
-                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.deploy_prod.outcome ] }}"
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> ${{ steps.deploy_prod.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.deploy_prod.outcome ] }}"
                             }
                           }
                         ]
