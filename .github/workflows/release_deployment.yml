@@ -23,7 +23,7 @@ jobs:
                   cache-dependency-path: yarn.lock
 
             - name: Install playwright
-              run: yarn add playwright@1.29.0                  
+              run: yarn add @playwright/test               
 
             - name: Install Playwright Browsers
               if: steps.cache-playwright.outputs.cache-hit != 'true'
