@@ -37,13 +37,13 @@ jobs:
       with:
         pattern: '/remotes\/origin\//gm'
         string: ${{ steps.get_branch.outputs.preview_branch }}
-        replace-with: ''
+        replace-with: 'preview-'
 
     - name: Handle special characters
       id: handle-especial-chars
       uses: frabert/replace-string-action@v2.4
       with:
-        pattern: '[\/\?\%*:|"<>]'
+        pattern: '/[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]/gm'
         string: ${{ steps.remove-remotes.outputs.replaced }}
         replace-with: '-'
 
@@ -51,13 +51,13 @@ jobs:
 
     - shell: bash
       run: |
-       echo ${{ github.event.deployment_status.target_url }} >> preview-${{ steps.handle-especial-chars.outputs.replaced }}.txt
+       echo ${{ github.event.deployment_status.target_url }} >> ${{ steps.handle-especial-chars.outputs.replaced }}.txt
 
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
-        name: preview-${{ steps.findandreplace.outputs.value }}.txt
-        path: preview-${{ steps.findandreplace.outputs.value }}.txt
+        name: ${{ steps.handle-especial-chars.outputs.replaced }}.txt
+        path: ${{ steps.handle-especial-chars.outputs.replaced }}.txt
 
     - name: Dump GitHub context
       env:
