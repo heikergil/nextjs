@@ -40,7 +40,7 @@ jobs:
         replace-with: 'preview-'
 
     - name: Handle special characters
-      id: handle-especial-chars
+      id: normalize_URL
       uses: frabert/replace-string-action@v2.4
       with:
         pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
@@ -52,13 +52,13 @@ jobs:
 
     - shell: bash
       run: |
-       echo ${{ github.event.deployment_status.target_url }} >> ${{ steps.handle-especial-chars.outputs.replaced }}.txt
+       echo ${{ github.event.deployment_status.target_url }} >> ${{ steps.normalize_URL.outputs.replaced }}.txt
 
     - name: Upload url
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ steps.handle-especial-chars.outputs.replaced }}.txt
-        path: ${{ steps.handle-especial-chars.outputs.replaced }}.txt
+        name: ${{ steps.normalize_URL.outputs.replaced }}.txt
+        path: ${{ steps.normalize_URL.outputs.replaced }}.txt
 
     - name: Dump GitHub context
       env:
