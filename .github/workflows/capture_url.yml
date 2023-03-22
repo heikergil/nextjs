@@ -46,7 +46,7 @@ jobs:
         pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
         string: ${{ steps.remove-remotes.outputs.replaced }}
         replace-with: '-'
-
+ #hello there
   #hello
 
     - shell: bash
