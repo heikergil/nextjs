@@ -35,7 +35,7 @@ jobs:
       id: remove-remotes
       uses: frabert/replace-string-action@v2.4
       with:
-        pattern: '/remotes\/origin\//gm'
+        pattern: 'remotes/origin/'
         string: ${{ steps.get_branch.outputs.preview_branch }}
         replace-with: 'preview-'
 
@@ -43,7 +43,7 @@ jobs:
       id: handle-especial-chars
       uses: frabert/replace-string-action@v2.4
       with:
-        pattern: '/[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]/gm'
+        pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
         string: ${{ steps.remove-remotes.outputs.replaced }}
         replace-with: '-'
 
