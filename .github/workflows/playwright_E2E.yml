@@ -25,9 +25,9 @@ jobs:
       uses: frabert/replace-string-action@v2.4
       with:
         pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
-        flags: 'gm'
-        string: ${{ steps.get_branch.outputs.replaced }}
+        string: ${{ steps.get_branch.outputs.branch }}
         replace-with: '-'
+        flags: 'gm'
 
     - name: Download URL file
       uses: dawidd6/action-download-artifact@v2.26.0
