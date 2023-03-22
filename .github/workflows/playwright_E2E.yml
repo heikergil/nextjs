@@ -21,7 +21,7 @@ jobs:
         echo "preview_branch=$branch" >> $GITHUB_OUTPUT
 
     - name: Handle special characters
-      id: normalize_URL
+      id: file_name
       uses: frabert/replace-string-action@v2.4
       with:
         string: ${{ steps.get_branch.outputs.preview_branch }}
@@ -33,7 +33,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2.26.0
       with:
         workflow: capture_url.yml
-        name: preview-${{ steps.normalize_URL.outputs.replaced }}.txt
+        name: preview-${{ steps.file_name.outputs.replaced }}.txt
         search_artifacts: true    
 
     - name: Dump GitHub context
@@ -45,7 +45,7 @@ jobs:
       id: capture-url
       shell: bash
       run: |
-        previewURL=`cat preview-${{ steps.get_branch.outputs.preview_branch }}.txt`
+        previewURL=`cat preview-${{ steps.file_name.outputs.replaced }}.txt`
         echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
     
     - name: Install playwright
