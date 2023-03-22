@@ -24,7 +24,7 @@ jobs:
       id: normalize_URL
       uses: frabert/replace-string-action@v2.4
       with:
-        string: ${{ steps.get_branch.outputs.branch }}
+        string: ${{ steps.get_branch.outputs.preview_branch }}
         pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
         replace-with: '-'
         flags: 'g'
