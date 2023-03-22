@@ -43,7 +43,7 @@ jobs:
       id: handle-especial-chars
       uses: frabert/replace-string-action@v2.4
       with:
-        pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
+        pattern: '/[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]/gm'
         string: ${{ steps.remove-remotes.outputs.replaced }}
         replace-with: '-'
  #hello there
