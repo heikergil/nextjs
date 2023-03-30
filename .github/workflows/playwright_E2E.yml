@@ -56,14 +56,11 @@ jobs:
       run: yarn add @playwright/test
       
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install --with-deps chromium
       if: steps.playwright-cache.outputs.cache-hit != 'true'
     - run: npx playwright install-deps
       if: steps.playwright-cache.outputs.cache-hit == 'true'  
     
-    # - name: Install playwright deps
-    #   run: npx playwright install --with-deps chromium
-
     - name: Run Playwright tests
       env: 
         CI: true
@@ -72,7 +69,7 @@ jobs:
         EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
         EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
         BASE_URL: ${{ steps.capture-url.outputs.preview_url }}
-      run: yarn test:smoke
+      run: yarn test
     - uses: actions/upload-artifact@v2
       if: always()
       with:
