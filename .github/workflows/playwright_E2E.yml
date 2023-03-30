@@ -4,7 +4,7 @@ on:
     types: [labeled]
 
 jobs:
-   E2E-Tests-checks:
+   Tests-E2E:
     timeout-minutes: 30
     if: ${{ github.event.label.name == 'ready' }}
     runs-on: ubuntu-latest
@@ -34,37 +34,51 @@ jobs:
       with:
         workflow: capture_url.yml
         name: preview-${{ steps.file_name.outputs.replaced }}.txt
-        search_artifacts: true    
-
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
+        search_artifacts: true
 
     - name: Store preview URL
       id: capture-url
       shell: bash
       run: |
         previewURL=`cat preview-${{ steps.file_name.outputs.replaced }}.txt`
-        echo "preview_url=$previewURL" >> $GITHUB_OUTPUT 
-    
+        echo "preview_url=$previewURL" >> $GITHUB_OUTPUT
+
+
+    - uses: actions/cache@v2
+      id: playwright-cache
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
     - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: yarn add @playwright/test
-
-    - name: Install playwright deps
-      run: npx playwright install --with-deps chromium
+      
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+    - run: npx playwright install-deps
+      if: steps.playwright-cache.outputs.cache-hit == 'true'  
+    
+    # - name: Install playwright deps
+    #   run: npx playwright install --with-deps chromium
 
     - name: Run Playwright tests
       env: 
+        CI: true
+        TEST_ACCOUNT_EMAIL: ${{ secrets.TEST_ACCOUNT_EMAIL }}
+        TEST_ACCOUNT_PASS: ${{ secrets.TEST_ACCOUNT_PASS }}
+        EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
+        EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
         BASE_URL: ${{ steps.capture-url.outputs.preview_url }}
-      run: yarn test
+      run: yarn test:smoke
     - uses: actions/upload-artifact@v2
       if: always()
       with:
         name: playwright-report
         path: playwright-report/
-        retention-days: 3    
+        retention-days: 3   
  
  
     
