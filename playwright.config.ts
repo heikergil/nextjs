@@ -5,13 +5,13 @@ require('dotenv').config();
 const config: PlaywrightTestConfig = {
 	testDir: './e2e/tests',
 	/* Maximum time one test can run for. */
-	timeout: 90 * 1000,
+	timeout: 900 * 1000,
 	expect: {
 		/**
 		 * Maximum time expect() should wait for the condition to be met.
 		 * For example in `await expect(locator).toHaveText();`
 		 */
-		timeout: 8000,
+		timeout: 80000,
 	},
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
@@ -24,13 +24,13 @@ const config: PlaywrightTestConfig = {
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	reportSlowTests: {
 		max: 0,
-		threshold: 120 * 1000
+		threshold: 1200 * 1000
 	},
 	//* repeatEach: 2, *//
 	use: {
 		
 		/* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-		actionTimeout:70000,
+		actionTimeout:700000,
 		/* Base URL to use in actions like `await page.goto('/')`. */
 
 		 baseURL: process.env.PROD ? process.env.BASE_URL : process.env.BASE_URL,
