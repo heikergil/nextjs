@@ -48,7 +48,7 @@ jobs:
       with:
         path: |
           ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.lock') }}
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
 
     - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
