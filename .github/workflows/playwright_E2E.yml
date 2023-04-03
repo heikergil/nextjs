@@ -1,69 +1,109 @@
-name: E2E Tests
+name: Prod Deploy
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  
 on:
-  pull_request:
-    types: [labeled]
+  release:
+    types: [published]
 
 jobs:
-   Tests-E2E:
-    timeout-minutes: 30
-    if: ${{ github.event.label.name == 'ready' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
+    test:
+        timeout-minutes: 15
+        if: github.event.release.target_commitish == ${{ secrets.DEPLOYMENT_BRANCH }}
+        name: Test dev
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js 
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
 
-      - name: get branch
-        id: get_branch
-        run: |
-          branch=${{ github.head_ref }}
-          echo "preview_branch=$branch" >> $GITHUB_OUTPUT
+            - name: Install playwright
+              run: yarn add @playwright/test               
 
-      - name: Handle special characters
-        id: file_name
-        uses: frabert/replace-string-action@v2.4
-        with:
-          string: ${{ steps.get_branch.outputs.preview_branch }}
-          pattern: '[\~\#\%\&\*\{\}\\\:\<\>\?\/\+\|]'
-          replace-with: '-'
-          flags: 'g'
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps chromium webkit  
 
-      - name: Download URL file
-        uses: dawidd6/action-download-artifact@v2.26.0
-        with:
-          workflow: capture_url.yml
-          name: preview-${{ steps.file_name.outputs.replaced }}.txt
-          search_artifacts: true
+            - name: Run Playwright tests
+              id: e2e_tests
+              env:
+                CI: true
+                TEST_ACCOUNT_EMAIL: ${{ secrets.TEST_ACCOUNT_EMAIL }}
+                TEST_ACCOUNT_PASS: ${{ secrets.TEST_ACCOUNT_PASS }}
+                EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
+                EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
+                BASE_URL: ${{ secrets.DEV_BRANCH_URL }}
+              run: yarn test
+            - uses: actions/upload-artifact@v2
+              if: always()
+              with:
+                name: playwright-report
+                path: playwright-report/
+                retention-days: 3
 
-      - name: Store preview URL
-        id: capture-url
-        shell: bash
-        run: |
-          previewURL=`cat preview-${{ steps.file_name.outputs.replaced }}.txt`
-          echo "preview_url=$previewURL" >> $GITHUB_OUTPUT
+            - name: E2E tests slack notification
+              if: always()
+              uses: slackapi/slack-github-action@v1.23.0
+              with:
+                  channel-id: 'test-notifications'
+                  payload: |
+                      {
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }}> E2E tests ${{ steps.e2e_tests.outcome }} ${{ fromJSON('{"failure": "  :test_tube::fail:", "success": ":test_tube::white_check_mark:"}')[ steps.e2e_tests.outcome ] }}"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-      - name: Install playwright
-        run: yarn add @playwright/test
+    deploy:
+        name: deploy to prod
+        needs: [test]
+        timeout-minutes: 15
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+
+            - name: Install Vercel CLI
+              run: npm install --global vercel@latest              
+
+            - name: Pull Prod Enviroment
+              run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Deploy Prod
+              continue-on-error: true
+              id: deploy_prod
+              run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}                     
+
+            - name: Release slack notification
+              id: slack
+              uses: slackapi/slack-github-action@v1.23.0
+              with:
+                  channel-id: 'test-notifications'
+                  payload: |
+                      {
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "<${{ github.event.release.html_url }} | Release: ${{ github.event.release.tag_name }} - ${{ github.event.release.name }} > ${{ fromJSON('{"failure": " There was a problem with the deployment :fail:", "success": "is live :white_check_mark:"}')[ steps.deploy_prod.outcome ] }}"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}           
+
         
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Playwright tests
-        env: 
-          CI: true
-          TEST_ACCOUNT_EMAIL: ${{ secrets.TEST_ACCOUNT_EMAIL }}
-          TEST_ACCOUNT_PASS: ${{ secrets.TEST_ACCOUNT_PASS }}
-          EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
-          EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
-          BASE_URL: ${{ steps.capture-url.outputs.preview_url }}
-        run:  yarn test
-      - uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 3         
 
  
     
