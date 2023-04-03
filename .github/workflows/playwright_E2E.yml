@@ -13,7 +13,6 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '18.x'
-        cache: 'yarn'
 
     - name: get branch
       id: get_branch
@@ -49,11 +48,11 @@ jobs:
       with:
         path: |
           ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.lock') }}
 
     - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: yarn add @playwright/test
+      run: npm install @playwright/test
       
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
@@ -69,7 +68,7 @@ jobs:
         EMPTY_TEST_ACCOUNT_EMAIL: ${{ secrets.EMPTY_TEST_ACCOUNT_EMAIL }}
         EMPTY_TEST_ACCOUNT_PASS: ${{ secrets.EMPTY_TEST_ACCOUNT_PASS }} 
         BASE_URL: ${{ steps.capture-url.outputs.preview_url }}
-      run: yarn test
+      run:  PROD=true npx playwright test e2e/tests --workers=1
     - uses: actions/upload-artifact@v2
       if: always()
       with:
