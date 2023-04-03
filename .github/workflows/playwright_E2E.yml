@@ -52,7 +52,7 @@ jobs:
 
     - name: Install playwright
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npm install @playwright/test
+      run: npm install -D @playwright/test
       
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
