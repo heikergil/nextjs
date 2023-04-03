@@ -13,7 +13,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          cache: yarn
 
       - name: get branch
         id: get_branch
@@ -44,30 +43,11 @@ jobs:
           previewURL=`cat preview-${{ steps.file_name.outputs.replaced }}.txt`
           echo "preview_url=$previewURL" >> $GITHUB_OUTPUT
 
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-            path: |
-                node_modules
-            key: modules-${{ hashFiles('yarn.lock') }}
-
-      - name: Cache Playwright
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-            path: |
-                ~/.cache/ms-playwright
-            key: playwright-${{ hashFiles('yarn.lock') }}
-      
       - name: Install playwright
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: yarn add @playwright/test
         
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-      - run: npx playwright install-deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true' 
 
       - name: Run Playwright tests
         env: 
