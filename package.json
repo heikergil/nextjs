@@ -10,7 +10,8 @@
     "test": "npx playwright test e2e/tests  --workers=1",
     "test:prod": "PROD=true npx playwright test e2e/tests --workers=1",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "npx chromatic --project-token=b3ad77870933 --exit-zero-on-changes"
   },
   "dependencies": {
     "@next/font": "13.0.7",
