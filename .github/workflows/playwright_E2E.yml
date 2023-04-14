@@ -1,16 +1,16 @@
-name: Prod Deploy
+name: E2E tests
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   
 on:
-  release:
-    types: [published]
+  pull_request:
+    types: [labeled]
 
 jobs:
     test:
         timeout-minutes: 15
-        if: github.event.release.target_commitish == ${{ secrets.DEPLOYMENT_BRANCH }}
+        if: ${{ github.event.label.name == 'ready' }}
         name: Test dev
         runs-on: ubuntu-latest
         steps:
