@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "npx playwright test e2e/tests  --workers=1",
-    "test:prod": "PROD=true npx playwright test e2e/tests --workers=1"
+    "test:prod": "PROD=true npx playwright test e2e/tests --workers=1",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@next/font": "13.0.7",
@@ -27,5 +29,16 @@
     "styled-components": "^5.3.6",
     "styled-normalize": "^8.0.7"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.4",
+    "@storybook/addon-interactions": "^7.0.4",
+    "@storybook/addon-links": "^7.0.4",
+    "@storybook/blocks": "^7.0.4",
+    "@storybook/nextjs": "^7.0.4",
+    "@storybook/react": "^7.0.4",
+    "@storybook/testing-library": "^0.0.14-next.2",
+    "chromatic": "^6.17.3",
+    "eslint-plugin-storybook": "^0.6.11",
+    "storybook": "^7.0.4"
+  }
 }
